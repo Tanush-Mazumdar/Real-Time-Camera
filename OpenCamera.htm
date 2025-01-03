@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Camera</title>
+
+  <style>
+    /* Full-page styling */
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    /* Background Image Styling */
+    .bg-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('C:/Users/user/Desktop/Projects/html/bg.jpg') no-repeat center center;
+      background-size: cover;
+      z-index: 0; /* Ensures the image stays below the content */
+    }
+
+    /* Centered container for all content */
+    .container {
+      position: relative;
+      text-align: center;
+      z-index: 1; /* Content stays above the background image */
+    }
+
+    /* Video styling */
+    video {
+      width: 100%;
+      max-width: 500px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+    }
+
+    /* Button styling */
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      background-color: #4CAF50;
+      color: white;
+    }
+
+    button:disabled {
+      background-color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Image -->
+  <div class="bg-image"></div>
+ 
+  <!-- Centered Content -->
+  <div class="container">
+    <h1>Real-Time Camera</h1>
+    <video id="camera" autoplay playsinline></video>
+    <div>
+      <button id="startBtn">START</button>
+      <button id="stopBtn" disabled>STOP</button>
+    </div>
+  </div>
+
+  <script>
+    const videoElement = document.getElementById('camera');
+    const startButton = document.getElementById('startBtn');
+    const stopButton = document.getElementById('stopBtn');
+    let stream = null;
+
+    // Start the camera
+    startButton.addEventListener('click', () => {
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((cameraStream) => {
+          stream = cameraStream;
+          videoElement.srcObject = stream;
+          startButton.disabled = true;
+          stopButton.disabled = false;
+        })
+        .catch((error) => {
+          console.error("Error accessing the camera: ", error);
+          alert("Could not access the camera. Please ensure permissions are granted.");
+        });
+    });
+
+    // Stop the camera
+    stopButton.addEventListener('click', () => {
+      if (stream) {
+        const tracks = stream.getTracks();
+        tracks.forEach((track) => track.stop()); // Stop all video tracks
+        videoElement.srcObject = null;
+        stream = null;
+      }
+      startButton.disabled = false;
+      stopButton.disabled = true;
+    });
+  </script>
+</body>
+</html>
